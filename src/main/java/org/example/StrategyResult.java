@@ -3,6 +3,7 @@ package org.example;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class StrategyResult {
 
@@ -13,7 +14,7 @@ public class StrategyResult {
     }
 
     public StrategyResult(){
-        this.trades = new ArrayList<>();
+        this.trades = new CopyOnWriteArrayList<>();
     }
 
     public List<Trade> getTrades(){
@@ -83,13 +84,45 @@ public class StrategyResult {
         return returnOnTrade;
     }
 
+    public int getWinners(){
+        return (int) this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) > 0).count();
+    }
+
+    public int getLosers(){
+        return (int) this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) < 0).count();
+    }
+
+    public BigDecimal maxWinner(){
+        return this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) > 0).map(Trade::getProfit).max(BigDecimal::compareTo).get();
+    }
+
+    public BigDecimal maxLoser(){
+        return this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) < 0).map(Trade::getProfit).min(BigDecimal::compareTo).get();
+    }
+
+    public BigDecimal avgWinner(){
+        return this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) > 0).map(Trade::getProfit).reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(this.getWinners()), 8, BigDecimal.ROUND_HALF_UP);
+    }
+
+    public BigDecimal avgLoser(){
+        return this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) < 0).map(Trade::getProfit).reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(this.getLosers()), 8, BigDecimal.ROUND_HALF_UP);
+    }
+
     public String getSummary(){
         return "Total profit: " + this.getTotalProfit() + "\n" +
                 "Total dividend profit: " + this.getTotalDividendProfit() + "\n" +
                 "Total trading profit: " + this.getTotalTradingProfit() + "\n" +
                 "Total trades: " + this.trades.size() + "\n" +
                 "Total fee : " + this.getTotalFee() + "\n" +
-                "Total days : " + this.getTotalDays() + "\n";
+                "Total days : " + this.getTotalDays() + "\n" +
+                "Avg ROI yearly adjusted return: " + this.getAvgRoiYearlyAdjustedReturn() + "\n" +
+                "Avg ROI: " + this.getAvgRoi() + "\n" +
+                "Winners: " + this.getWinners() + "\n" +
+                "Losers: " + this.getLosers() + "\n" +
+                "Max winner: " + this.maxWinner() + "\n" +
+                "Max loser: " + this.maxLoser() + "\n" +
+                "Avg winner: " + this.avgWinner() + "\n" +
+                "Avg loser: " + this.avgLoser() + "\n";
     }
 
 }

@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.model.ExecutionMoment;
 import org.junit.Test;
 
 import javax.swing.*;
@@ -13,9 +14,9 @@ public class BackTesterTest {
     @Test
     public void testDividendRunOnCompany() {
         BackTester backTester = new BackTester();
-        backTester.setTakeProfit(BigDecimal.valueOf(0.03));
-        backTester.setStopLoss(BigDecimal.valueOf(0.03));
-        StrategyResult strategyResult = backTester.testDividendRunOnCompany("SANTANDER", -20, -1);
+//        backTester.setTakeProfit(BigDecimal.valueOf(0.03));
+//        backTester.setStopLoss(BigDecimal.valueOf(0.03));
+        StrategyResult strategyResult = backTester.testDividendRunOnCompany("FERRO", -20, 0, 0.02, 0.2, ExecutionMoment.CLOSE, ExecutionMoment.OPEN);
         System.out.println(strategyResult.getTrades());
         System.out.println(strategyResult.getSummary());
         System.out.println(strategyResult.getAvgRoi());
@@ -32,7 +33,7 @@ public class BackTesterTest {
         BackTester backTester = new BackTester();
         backTester.setTakeProfit(BigDecimal.valueOf(0.07));
         backTester.setStopLoss(BigDecimal.valueOf(0.05));
-        StrategyResult strategyResult = backTester.testDividendRunOnCompanies(timescaleGpwDividendRepository.getTickers(), -20, -1);
+        StrategyResult strategyResult = backTester.testDividendRunOnCompanies(timescaleGpwDividendRepository.getTickers(), -30, 0, 0.02, 0.2, ExecutionMoment.CLOSE, ExecutionMoment.CLOSE);
         System.out.println(strategyResult.getTrades());
         System.out.println(strategyResult.getSummary());
         System.out.println(strategyResult.getAvgRoi());

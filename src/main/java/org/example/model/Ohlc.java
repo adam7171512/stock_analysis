@@ -30,6 +30,10 @@ public class Ohlc {
         this.close = close;
         this.volume = volume;
         this.transactionCount = transactionCount;
+
+//        if (open.compareTo(BigDecimal.ZERO) == 0) {
+//            this.open = this.low = this.high = this.close;
+//        }
     }
 
     public BigDecimal getOpen() {

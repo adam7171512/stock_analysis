@@ -6,6 +6,8 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.example.model.Ohlc;
 import org.example.model.Timeframe;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -57,6 +59,9 @@ public class FilesystemOhlcRepository implements IOhlcRepository {
         for (int i = 0; i < ohlcList.size(); i++) {
             if (ohlcList.get(i).getDate().isEqual(targetDate)) {
                 exDivIndex = i;
+                if (ohlcList.get(i).getTransactionCount().compareTo(BigDecimal.ZERO) == 0) {
+                    return Collections.emptyList();
+                }
                 break;
             }
         }
@@ -105,5 +110,22 @@ public class FilesystemOhlcRepository implements IOhlcRepository {
 
         this.ohlcMap.put(ticker, ohlcList);
         return ohlcList;
+    }
+
+    public List<String> getCompanies(String filePath) throws IOException {
+        List<String> result = new ArrayList<>();
+        File file = new File(filePath);
+
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] splitLine = line.split(" ", 2);
+            if (splitLine.length > 0 && !splitLine[0].isEmpty()) {
+                result.add(splitLine[0]);
+            }
+        }
+        br.close();
+
+        return result;
     }
 }
