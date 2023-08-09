@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 public class Ohlc {
+    private String ticker;
     private OffsetDateTime date;
     private BigDecimal open;
     private BigDecimal high;
@@ -11,8 +12,8 @@ public class Ohlc {
     private BigDecimal close;
 
     private BigDecimal volume;
+    private BigDecimal difference;
 
-    private BigDecimal transactionCount;
 
     public Ohlc(BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, OffsetDateTime date) {
         this.date = date;
@@ -22,18 +23,20 @@ public class Ohlc {
         this.close = close;
     }
 
-    public Ohlc(OffsetDateTime date, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, BigDecimal volume, BigDecimal transactionCount) {
+    public Ohlc(String ticker, OffsetDateTime date, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, BigDecimal difference, BigDecimal volume) {
         this.date = date;
         this.open = open;
         this.high = high;
         this.low = low;
         this.close = close;
         this.volume = volume;
-        this.transactionCount = transactionCount;
+        this.ticker = ticker;
+        this.difference = difference;
 
-//        if (open.compareTo(BigDecimal.ZERO) == 0) {
-//            this.open = this.low = this.high = this.close;
-//        }
+        if (this.volume.compareTo(BigDecimal.ZERO) < 0){
+            throw new RuntimeException("Volume cant be lower than 0!" + this.ticker + this.volume + this.date + this.open + this.close);
+        }
+
     }
 
     public BigDecimal getOpen() {
@@ -60,8 +63,12 @@ public class Ohlc {
         return volume;
     }
 
-    public BigDecimal getTransactionCount() {
-        return transactionCount;
+    public BigDecimal getDifference() {
+        return difference;
+    }
+
+    public String getTicker(){
+        return this.ticker;
     }
 
     @Override
@@ -73,7 +80,7 @@ public class Ohlc {
                 ", low=" + low +
                 ", close=" + close +
                 ", volume=" + volume +
-                ", transactionCount=" + transactionCount +
+                ", difference=" + difference +
                 '}';
     }
 }

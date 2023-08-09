@@ -74,14 +74,17 @@ public class StrategyResult {
     }
 
     public BigDecimal getAvgRoi(){
-        BigDecimal totalDays = BigDecimal.valueOf(this.getTotalDays());
         BigDecimal totalProfit = this.getTotalProfit();
         BigDecimal profitPerTrade = totalProfit.divide(BigDecimal.valueOf(this.trades.size()), 8, BigDecimal.ROUND_HALF_UP);
-        BigDecimal totalTrades = BigDecimal.valueOf(this.trades.size());
-        BigDecimal daysPerTrade = totalDays.divide(totalTrades, 8, BigDecimal.ROUND_HALF_UP);
 
         BigDecimal returnOnTrade = profitPerTrade.divide(BigDecimal.valueOf(100));
         return returnOnTrade;
+    }
+
+    public BigDecimal getAvgProfitPerTrade(){
+        BigDecimal totalProfit = this.getTotalProfit();
+        BigDecimal profitPerTrade = totalProfit.divide(BigDecimal.valueOf(this.trades.size()), 8, BigDecimal.ROUND_HALF_UP);
+        return profitPerTrade;
     }
 
     public int getWinners(){

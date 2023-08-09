@@ -19,6 +19,7 @@ public class Trade {
     private model.Dividend dividend;
 
     public Trade(Ohlc entryOhlc, Ohlc exitOhlc, BigDecimal entryPrice, BigDecimal exitPrice, BigDecimal size) {
+        this.symbol = entryOhlc.getTicker();
         this.entryOhlc = entryOhlc;
         this.exitOhlc = exitOhlc;
         this.entryPrice = entryPrice;
@@ -115,11 +116,11 @@ public class Trade {
     }
 
     public long getDays(){
-        return entryOhlc.getDate().until(exitOhlc.getDate(), ChronoUnit.DAYS);
+        return entryOhlc.getDate().until(exitOhlc.getDate(), ChronoUnit.DAYS) + 1;
     }
 
     public String getStats(){
-        return "Size " + size +  " Entry: " + entryOhlc.getDate() + " " + entryPrice + " Exit: " + exitOhlc.getDate() + " " + exitPrice +
+        return "Ticker: " + symbol + " Size " + size +  " Entry: " + entryOhlc.getDate() + " " + entryPrice + " Exit: " + exitOhlc.getDate() + " " + exitPrice +
                 " Profit: " + getProfit() + " ProfitPct: " + getProfitPct() + "Trading profit : " + getTradingProfit() + " Dividend profit: " + getDividendProfit() + " Trading fee: " + getTradingFee();
     }
 

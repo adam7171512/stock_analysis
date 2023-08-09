@@ -6,6 +6,7 @@ import org.junit.Test;
 import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class BackTesterTest {
         BackTester backTester = new BackTester();
 //        backTester.setTakeProfit(BigDecimal.valueOf(0.03));
 //        backTester.setStopLoss(BigDecimal.valueOf(0.03));
-        StrategyResult strategyResult = backTester.testDividendRunOnCompany("FERRO", -20, 0, 0.02, 0.2, ExecutionMoment.CLOSE, ExecutionMoment.OPEN);
+        StrategyResult strategyResult = backTester.testDividendRunOnCompany("FERRO", 0, 30, 0.02, 0.2, ExecutionMoment.CLOSE, ExecutionMoment.OPEN, BigDecimal.ZERO, BigDecimal.valueOf(999999999), LocalDate.of(2019, 1, 1), LocalDate.of(2020, 1, 1));
         System.out.println(strategyResult.getTrades());
         System.out.println(strategyResult.getSummary());
         System.out.println(strategyResult.getAvgRoi());
@@ -31,9 +32,9 @@ public class BackTesterTest {
     public void testDividendRunOnCompanies() {
         TimescaleGpwDividendRepository timescaleGpwDividendRepository = new TimescaleGpwDividendRepository();
         BackTester backTester = new BackTester();
-        backTester.setTakeProfit(BigDecimal.valueOf(0.07));
-        backTester.setStopLoss(BigDecimal.valueOf(0.05));
-        StrategyResult strategyResult = backTester.testDividendRunOnCompanies(timescaleGpwDividendRepository.getTickers(), -30, 0, 0.02, 0.2, ExecutionMoment.CLOSE, ExecutionMoment.CLOSE);
+//        backTester.setDailyTurnoverLowerLimit(BigDecimal.valueOf(100000));
+//        backTester.setDailyTurnoverUpperLimit(BigDecimal.valueOf(2000000));
+        StrategyResult strategyResult = backTester.testDividendRunOnCompanies(timescaleGpwDividendRepository.getTickers(), 10, 30, 0.02, 0.2, ExecutionMoment.CLOSE, ExecutionMoment.CLOSE, BigDecimal.ZERO, BigDecimal.valueOf(999999999), LocalDate.of(2019, 1, 1), LocalDate.now());
         System.out.println(strategyResult.getTrades());
         System.out.println(strategyResult.getSummary());
         System.out.println(strategyResult.getAvgRoi());

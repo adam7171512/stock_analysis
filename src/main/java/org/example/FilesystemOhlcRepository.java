@@ -59,7 +59,7 @@ public class FilesystemOhlcRepository implements IOhlcRepository {
         for (int i = 0; i < ohlcList.size(); i++) {
             if (ohlcList.get(i).getDate().isEqual(targetDate)) {
                 exDivIndex = i;
-                if (ohlcList.get(i).getTransactionCount().compareTo(BigDecimal.ZERO) == 0) {
+                if (ohlcList.get(i).getVolume().compareTo(BigDecimal.ZERO) == 0) {
                     return Collections.emptyList();
                 }
                 break;
@@ -93,6 +93,7 @@ public class FilesystemOhlcRepository implements IOhlcRepository {
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
                 ohlcList.add(new Ohlc(
+                        ticker,
                         OffsetDateTime.parse(nextRecord[0], DATE_TIME_FORMATTER),
                         new BigDecimal(nextRecord[1]),
                         new BigDecimal(nextRecord[2]),

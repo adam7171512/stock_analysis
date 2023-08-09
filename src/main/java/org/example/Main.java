@@ -1,17 +1,57 @@
 package org.example;
 
+import com.google.gson.Gson;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.example.graphs.HeatmapResponse;
+import org.example.graphs.PlotData;
 import org.example.model.ExecutionMoment;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
+
+    public static void displayImageFromURL(String urlString) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Create a JFrame
+                JFrame frame = new JFrame("Image Display");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                // Fetch the image from the URL
+                URL url = new URL(urlString);
+                Image image = ImageIO.read(url);
+
+                // Display the image in a JLabel
+                JLabel label = new JLabel(new ImageIcon(image));
+                frame.getContentPane().add(label, BorderLayout.CENTER);
+
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     public static void main(String[] args) throws IOException {
 
         TimescaleGpwDividendRepository timescaleGpwDividendRepository = new TimescaleGpwDividendRepository();
@@ -21,87 +61,158 @@ public class Main {
         List<String> companies = timescaleGpwDividendRepository.getTickers();
 
         // remove all wig20 companies
+//        List<String> wig20Companies = filesystemOhlcRepository.getCompanies("/home/krzyszfot/Desktop/stocks/wig20.txt");
+//        companies.removeAll(wig20Companies);
 
-        List<String> wig20Companies = filesystemOhlcRepository.getCompanies("/home/krzyszfot/Desktop/stocks/wig20.txt");
-        companies.removeAll(wig20Companies);
-
-//        //remove all mwig40 companies
-//
-        List<String> mwig40Companies = filesystemOhlcRepository.getCompanies("/home/krzyszfot/Desktop/stocks/mwig40.txt");
+//        List<String> mwig40Companies = filesystemOhlcRepository.getCompanies("/home/krzyszfot/Desktop/stocks/mwig40.txt");
 //        companies.removeAll(mwig40Companies);
 
+        List<Runnable> jobs = new ArrayList<>();
 
+        Runnable runnable = backTester.getJob(
+                companies,
+                -60,
+                -20,
+                -7,
+                60,
+                0.02,
+                0.2,
+                BigDecimal.valueOf(100000),
+                BigDecimal.valueOf(999999999),
+                ExecutionMoment.CLOSE,
+                ExecutionMoment.CLOSE,
+                LocalDate.MIN,
+                LocalDate.MAX
+        );
+//        jobs.add(runnable);
 
-//        backTester.setTakeProfit(BigDecimal.valueOf(0.2));
-//        backTester.setStopLoss(BigDecimal.valueOf(0.15));
-        StrategyResult strategyResult = backTester.testDividendRunOnCompanies(
+        Runnable lowYield = backTester.getJob(
                 companies,
                 -20,
+                -20,
                 0,
+                30,
+                0.0,
+                0.03,
+                BigDecimal.valueOf(0.0),
+                BigDecimal.valueOf(999999999),
+                ExecutionMoment.CLOSE,
+                ExecutionMoment.CLOSE,
+                LocalDate.MIN,
+                LocalDate.MAX
+        );
+//        jobs.add(lowYield);
+
+        Runnable midYield = backTester.getJob(
+                companies,
+                -20,
+                -20,
+                0,
+                30,
+                0.03,
+                0.06,
+                BigDecimal.valueOf(0.0),
+                BigDecimal.valueOf(999999999),
+                ExecutionMoment.CLOSE,
+                ExecutionMoment.CLOSE,
+//                LocalDate.of(2015, 1, 1),
+                LocalDate.MIN,
+                LocalDate.MAX
+        );
+//        jobs.add(midYield);
+
+        Runnable highYield = backTester.getJob(
+                companies,
+                -20,
+                -20,
+                0,
+                30,
+                0.06,
+                0.25,
+                BigDecimal.valueOf(0.0),
+                BigDecimal.valueOf(999999999),
+                ExecutionMoment.CLOSE,
+                ExecutionMoment.CLOSE,
+                LocalDate.MIN,
+                LocalDate.MAX
+        );
+//        jobs.add(highYield);
+
+
+
+        Runnable lowTurnover = backTester.getJob(
+                companies,
+                -60,
+                -20,
+                -7,
+                60,
+                0.02,
+                0.18,
+                BigDecimal.valueOf(100000),
+                BigDecimal.valueOf(2000000),
+                ExecutionMoment.CLOSE,
+                ExecutionMoment.CLOSE,
+                LocalDate.MIN,
+                LocalDate.MAX
+        );
+        jobs.add(lowTurnover);
+
+        Runnable midTurnover = backTester.getJob(
+                companies,
+                -20,
+                -20,
+                0,
+                30,
                 0.0,
                 2,
-                ExecutionMoment.OPEN,
-                ExecutionMoment.CLOSE
+                BigDecimal.valueOf(2000000),
+                BigDecimal.valueOf(10000000),
+                ExecutionMoment.CLOSE,
+                ExecutionMoment.CLOSE,
+                LocalDate.MIN,
+                LocalDate.MAX
         );
-//        backTester.getRoiMatrix(companies, -40, -20, -7, 0);
-        System.out.println(strategyResult.getTrades());
-        System.out.println(strategyResult.getSummary());
-        System.out.println(strategyResult.getAvgRoi());
-        System.out.println(strategyResult.getAvgRoiYearlyAdjustedReturn());
+//        jobs.add(midTurnover);
 
-        // draw a graph of the cumulative return from trades over number of trades
-//        List<BigDecimal> profitList = strategyResult.getTrades().stream().map(Trade::getProfit).toList();
+        Runnable highTurnover = backTester.getJob(
+                companies,
+                -20,
+                -20,
+                0,
+                30,
+                0.0,
+                2,
+                BigDecimal.valueOf(10000000),
+                BigDecimal.valueOf(999999999),
+                ExecutionMoment.CLOSE,
+                ExecutionMoment.CLOSE,
+                LocalDate.MIN,
+                LocalDate.MAX
+        );
+//        jobs.add(highTurnover);
 
-        // use swing to draw a graph
+        ExecutorService executorService = Executors.newFixedThreadPool(20);
+        for (Runnable job : jobs) {
+            executorService.submit(job);
+        }
+        executorService.shutdown();
 
-//        List<BigDecimal> cumulativeProfits = new ArrayList<>();
-//        BigDecimal cumulativeProfit = BigDecimal.ZERO;
-//        for (BigDecimal profit : profitList) {
-//            cumulativeProfit = cumulativeProfit.add(profit);
-//            cumulativeProfits.add(cumulativeProfit);
-//        }
 
-        // Use Swing to draw the graph
-        SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame("Cumulative Returns Over Trades");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.add(new GraphPanel(cumulativeProfits));
-//            frame.pack();
-//            frame.setVisible(true);
-        });
+
+
+
+//        Gson gson = new Gson();
+//        String jsonPayload = gson.toJson(plotData);
+//
+//        HttpClient client = HttpClients.createDefault();
+//        HttpPost post = new HttpPost("http://127.0.0.1:5000/heatmap");
+//        post.setEntity(new StringEntity(jsonPayload));
+//        post.setHeader("Content-type", "application/json");
+//        HttpResponse response = client.execute(post);
+//        String jsonResponse = EntityUtils.toString(response.getEntity());
+//        HeatmapResponse heatmapResponse = gson.fromJson(jsonResponse, HeatmapResponse.class);
+//        displayImageFromURL(heatmapResponse.getHeatmapUrl());
+
     }
+}
 
-    static class GraphPanel extends JPanel {
-        private List<BigDecimal> cumulativeProfits;
-
-        public GraphPanel(List<BigDecimal> cumulativeProfits) {
-            this.cumulativeProfits = cumulativeProfits;
-            setPreferredSize(new Dimension(800, 600));
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-
-            int width = getWidth();
-            int height = getHeight();
-
-            // Assume that max and min cumulative profit define our graph's vertical boundaries
-            BigDecimal maxProfit = cumulativeProfits.stream().max(BigDecimal::compareTo).orElse(BigDecimal.ONE);
-            BigDecimal minProfit = cumulativeProfits.stream().min(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
-
-            for (int i = 1; i < cumulativeProfits.size(); i++) {
-                int x1 = (int) (((double) (i - 1) / cumulativeProfits.size()) * width);
-                int x2 = (int) (((double) i / cumulativeProfits.size()) * width);
-
-                int y1 = height - (int) (((cumulativeProfits.get(i - 1).doubleValue() - minProfit.doubleValue()) /
-                        (maxProfit.doubleValue() - minProfit.doubleValue())) * height);
-                int y2 = height - (int) (((cumulativeProfits.get(i).doubleValue() - minProfit.doubleValue()) /
-                        (maxProfit.doubleValue() - minProfit.doubleValue())) * height);
-
-                g.drawLine(x1, y1, x2, y2);
-            }
-        }
-
-        }
-    }

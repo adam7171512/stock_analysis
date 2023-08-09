@@ -47,6 +47,7 @@ public class TimescaleGpwOhlcRepository implements IOhlcRepository{
             if (resultSet.next()) {
                 // return Ohlc object
                 return new Ohlc(
+                        ticker,
                         resultSet.getObject("date", OffsetDateTime.class),
                         resultSet.getBigDecimal("open"),
                         resultSet.getBigDecimal("high"),
@@ -90,6 +91,7 @@ public class TimescaleGpwOhlcRepository implements IOhlcRepository{
             while (resultSet.next()) {
                 ohlcList.add(
                         new Ohlc(
+                                ticker,
                                 resultSet.getObject("date", OffsetDateTime.class),
                                 resultSet.getBigDecimal("open"),
                                 resultSet.getBigDecimal("high"),
@@ -127,6 +129,7 @@ public class TimescaleGpwOhlcRepository implements IOhlcRepository{
             while (resultSet.next()) {
                 ohlcList.add(
                         new Ohlc(
+                                ticker,
                                 resultSet.getObject("date", OffsetDateTime.class),
                                 resultSet.getBigDecimal("open"),
                                 resultSet.getBigDecimal("high"),
