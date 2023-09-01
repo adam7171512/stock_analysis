@@ -8,7 +8,7 @@ It's not ready to run "as is" , as there are some ETL tools I've used to create 
 It allows to backtest performance of particular tickers with some logic like buying/selling the stock X days before/after ex-div date.
 It also allows to perform portfolio analysis with asset rotation, and some simple logic to include interests generated on free cash.
 
-At first, I've fetched the data into TimescaleDb running locally, however later I switched to File System for much faster backtesting, thus two implementations of IOhlcRepository and IDividendRepository were implemented.
+At first, I've fetched the data into TimescaleDb running locally, however later I switched to File System for much faster backtesting, thus two implementations of repository interfaces(IOhlcRepository and IDividendRepository) were written (TimescaleDb and FileSystem).
 
 The Main object representing state of Portfolio in Portfolio Analysis is PortfolioSnapshot. It freezes the Portfolio in time and defines it's composition and value.
 
