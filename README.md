@@ -1,6 +1,6 @@
 # Stock analyser
 
-This project was inspired by curiosity to inspect the price action of stocks near the dividend periods.
+This project was inspired by curiosity to inspect the price action of stocks near the dividend periods and look for some inefficiencies in the market.
 It is a **very** early stage prototype. It's mostly built in Java, however Python was used for data scraping (gpw prices from gpw website, dividend info from stockwatch.pl) and graphing using simple Flask endpoints.
 
 It's not ready to run "as is" , as there are some ETL tools I've used to create data compatible with my repository interfaces that I have not yet added to the project.
