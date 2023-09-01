@@ -3,6 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 from pydantic import BaseModel
 import datetime
+"""
+This script is used to extract dividend data from stockwatch.pl
+"""
 
 class DividendInfo(BaseModel):
     ticker: str

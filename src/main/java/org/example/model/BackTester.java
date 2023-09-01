@@ -38,6 +38,7 @@ public class BackTester {
     private Set<String> failedTickers = new CopyOnWriteArraySet<>();
 
     public BackTester(){
+        //Todo: inject repositories
         this.ohlcRepository = new GpwFileSystemOhlcRepository();
 //        this.ohlcRepository = new TimescaleGpwOhlcRepository();
         this.dividendRepository = new FilesystemDividendRepository();
@@ -260,39 +261,6 @@ public class BackTester {
         this.stopLoss = stopLoss;
     }
 
-    public void getMultiRunResults(
-            List<String> companies,
-            int buyDate,
-            List<Integer> sellDates,
-            ExecutionMoment buyMoment,
-            ExecutionMoment sellMoment,
-            double minYield,
-            double maxYield,
-            BigDecimal dailyTurnoverLowerLimit,
-            BigDecimal dailyTurnoverUpperLimit,
-            LocalDate minDate,
-            LocalDate maxDate
-    ) {
-        Map<Integer, StrategyResult> strategyResults = new HashMap<>();
-        for (Integer sellDate : sellDates) {
-            strategyResults.put(
-                    sellDate,
-                    testDividendRunOnCompanies(
-                            companies,
-                            buyDate,
-                            sellDate,
-                            minYield,
-                            maxYield,
-                            buyMoment,
-                            sellMoment,
-                            dailyTurnoverLowerLimit,
-                            dailyTurnoverUpperLimit,
-                            minDate,
-                            maxDate
-                    ));
-        }
-    }
-
     public PlotData getPlotDataMatrix(
             List<String> companies,
             int sessionBuyMin,
@@ -343,66 +311,6 @@ public class BackTester {
                 rowLabel,
                 colLabel
         );
-
         return plotData;
     }
-
-    public void sendPlotData(PlotData plotData) throws IOException {
-        Gson gson = new Gson();
-        String jsonPayload = gson.toJson(plotData);
-
-        HttpClient client = HttpClients.createDefault();
-        HttpPost post = new HttpPost("http://127.0.0.1:5000/heatmap");
-        post.setEntity(new StringEntity(jsonPayload));
-        post.setHeader("Content-type", "application/json");
-        HttpResponse response = client.execute(post);
-        String jsonResponse = EntityUtils.toString(response.getEntity());
-    }
-
-    public Runnable getJob(
-            List<String> companies,
-            int sessionBuyMin,
-            int sessionBuyMax,
-            int sessionSellMin,
-            int sessionSellMax,
-            double yieldMin,
-            double yieldMax,
-            BigDecimal dailyTurnoverLowerLimit,
-            BigDecimal dailyTurnoverUpperLimit,
-            ExecutionMoment buyMoment,
-            ExecutionMoment sellMoment,
-            LocalDate minDate,
-            LocalDate maxDate
-    ){
-
-        Runnable runnable = new Runnable () {
-            @Override
-            public void run() {
-                PlotData plotData = getPlotDataMatrix(
-                        companies,
-                        sessionBuyMin,
-                        sessionBuyMax,
-                        sessionSellMin,
-                        sessionSellMax,
-                        yieldMin,
-                        yieldMax,
-                        dailyTurnoverLowerLimit,
-                        dailyTurnoverUpperLimit,
-                        buyMoment,
-                        sellMoment,
-                        minDate,
-                        maxDate
-                );
-
-                try {
-                    sendPlotData(plotData);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        return runnable;
-    }
-
-
 }

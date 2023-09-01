@@ -8,10 +8,12 @@ import java.util.*;
 
 public class DividendStockFilterer {
 
-    private IDividendRepository dividendRepository;
+    private final IDividendRepository dividendRepository;
 
-    public DividendStockFilterer(){
-        this.dividendRepository = new FilesystemDividendRepository();
+    public DividendStockFilterer(
+            IDividendRepository dividendRepository
+    ){
+        this.dividendRepository = dividendRepository;
     }
 
     public Set<String> filterTickersOnDividends(Set<String> tickers, LocalDate from, LocalDate to, double minYield, double maxYield, int minOccurrences){

@@ -1,6 +1,7 @@
 package org.example.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -63,27 +64,24 @@ public class StrategyResult {
     public BigDecimal getAvgRoiYearlyAdjustedReturn(){
         BigDecimal totalDays = BigDecimal.valueOf(this.getTotalDays());
         BigDecimal totalProfit = this.getTotalProfit();
-        BigDecimal profitPerTrade = totalProfit.divide(BigDecimal.valueOf(this.trades.size()), 8, BigDecimal.ROUND_HALF_UP);
+        BigDecimal profitPerTrade = totalProfit.divide(BigDecimal.valueOf(this.trades.size()), 8, RoundingMode.HALF_UP);
         BigDecimal totalTrades = BigDecimal.valueOf(this.trades.size());
-        BigDecimal daysPerTrade = totalDays.divide(totalTrades, 8, BigDecimal.ROUND_HALF_UP);
+        BigDecimal daysPerTrade = totalDays.divide(totalTrades, 8, RoundingMode.HALF_UP);
 
-        BigDecimal returnOnTrade = profitPerTrade.divide(BigDecimal.valueOf(100));
-        BigDecimal returnOnTradeYearlyAdjusted = returnOnTrade.multiply(BigDecimal.valueOf(365).divide(daysPerTrade, 8, BigDecimal.ROUND_HALF_UP));
-        return returnOnTradeYearlyAdjusted;
+        BigDecimal returnOnTrade = profitPerTrade.divide(BigDecimal.valueOf(100), RoundingMode.FLOOR);
+        return returnOnTrade.multiply(BigDecimal.valueOf(365).divide(daysPerTrade, 8, RoundingMode.HALF_UP));
     }
 
     public BigDecimal getAvgRoi(){
         BigDecimal totalProfit = this.getTotalProfit();
-        BigDecimal profitPerTrade = totalProfit.divide(BigDecimal.valueOf(this.trades.size()), 8, BigDecimal.ROUND_HALF_UP);
+        BigDecimal profitPerTrade = totalProfit.divide(BigDecimal.valueOf(this.trades.size()), 8, RoundingMode.HALF_UP);
 
-        BigDecimal returnOnTrade = profitPerTrade.divide(BigDecimal.valueOf(100));
-        return returnOnTrade;
+        return profitPerTrade.divide(BigDecimal.valueOf(100), RoundingMode.FLOOR);
     }
 
     public BigDecimal getAvgProfitPerTrade(){
         BigDecimal totalProfit = this.getTotalProfit();
-        BigDecimal profitPerTrade = totalProfit.divide(BigDecimal.valueOf(this.trades.size()), 8, BigDecimal.ROUND_HALF_UP);
-        return profitPerTrade;
+        return totalProfit.divide(BigDecimal.valueOf(this.trades.size()), 8, BigDecimal.ROUND_HALF_UP);
     }
 
     public int getWinners(){
@@ -94,20 +92,44 @@ public class StrategyResult {
         return (int) this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) < 0).count();
     }
 
-    public BigDecimal maxWinner(){
-        return this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) > 0).map(Trade::getProfit).max(BigDecimal::compareTo).get();
+    public BigDecimal bestTrade(){
+        return this.trades
+                .stream()
+                .map(Trade::getProfit)
+                .max(BigDecimal::compareTo)
+                .orElseThrow();
     }
 
-    public BigDecimal maxLoser(){
-        return this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) < 0).map(Trade::getProfit).min(BigDecimal::compareTo).get();
+    public BigDecimal worstTrade(){
+        return this.trades
+                .stream()
+                .map(Trade::getProfit)
+                .min(BigDecimal::compareTo)
+                .orElseThrow();
     }
 
     public BigDecimal avgWinner(){
-        return this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) > 0).map(Trade::getProfit).reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(this.getWinners()), 8, BigDecimal.ROUND_HALF_UP);
+        if (this.getWinners() == 0){
+            return BigDecimal.ZERO;
+        }
+        return this.trades
+                .stream()
+                .map(Trade::getProfit)
+                .filter(profit -> profit.compareTo(BigDecimal.ZERO) > 0)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(BigDecimal.valueOf(this.getWinners()), 8, RoundingMode.HALF_UP);
     }
 
     public BigDecimal avgLoser(){
-        return this.trades.stream().filter(trade -> trade.getProfit().compareTo(BigDecimal.ZERO) < 0).map(Trade::getProfit).reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(this.getLosers()), 8, BigDecimal.ROUND_HALF_UP);
+        if (this.getLosers() == 0){
+            return BigDecimal.ZERO;
+        }
+        return this.trades
+                .stream()
+                .map(Trade::getProfit)
+                .filter(profit -> profit.compareTo(BigDecimal.ZERO) < 0)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(BigDecimal.valueOf(this.getLosers()), 8, RoundingMode.HALF_UP);
     }
 
     public String getSummary(){
@@ -121,8 +143,8 @@ public class StrategyResult {
                 "Avg ROI: " + this.getAvgRoi() + "\n" +
                 "Winners: " + this.getWinners() + "\n" +
                 "Losers: " + this.getLosers() + "\n" +
-                "Max winner: " + this.maxWinner() + "\n" +
-                "Max loser: " + this.maxLoser() + "\n" +
+                "Max winner: " + this.bestTrade() + "\n" +
+                "Max loser: " + this.worstTrade() + "\n" +
                 "Avg winner: " + this.avgWinner() + "\n" +
                 "Avg loser: " + this.avgLoser() + "\n";
     }

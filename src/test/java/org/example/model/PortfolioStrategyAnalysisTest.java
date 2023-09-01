@@ -1,6 +1,5 @@
 package org.example.model;
 
-import org.checkerframework.checker.units.qual.A;
 import org.example.TickerSetReader;
 import org.example.persistence.IDividendRepository;
 import org.example.persistence.IOhlcRepository;
@@ -15,14 +14,12 @@ import org.junit.Test;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.*;
+import java.util.*;
 
 public class PortfolioStrategyAnalysisTest {
+    /*
+    Please note that those are not real tests, but rather early stage experiments, test functions used as convenience.
+     */
 
     private IOhlcRepository ohlcRepository;
     private IDividendRepository dividendRepository;
@@ -34,16 +31,31 @@ public class PortfolioStrategyAnalysisTest {
     }
 
     @Test
-    public void analyse() throws IOException {
+    public void createPortolioStrategyComparisonGraph() throws IOException {
 
-        Set<String> tickers = TickerSetReader.getMWig40Tickers();
-//        tickers.addAll(TickerSetReader.getWig20Tickers());
-//        tickers.addAll(TickerSetReader.getMWig40Tickers());
-        DividendStockFilterer dividendStockFilterer = new DividendStockFilterer();
-        Set<String> dividendTickers = dividendStockFilterer.filterTickersOnDividends(tickers, LocalDate.of(2016, 1, 1), LocalDate.of(2018, 1, 3), 0.015, 0.9, 2);
-//        tickers.removeAll(dividendTickers);
+        Set<String> wig20Tickers = TickerSetReader.getMWig40Tickers();
+        Set<String> mwig40Tickers = TickerSetReader.getMWig40Tickers();
+        Set<String> swig80Tickers = TickerSetReader.getSWig80Tickers();
+        Set<String> tickers = new HashSet<>();
+        tickers.addAll(wig20Tickers);
+        tickers.addAll(mwig40Tickers);
+        tickers.addAll(swig80Tickers);
 
+        // Filter tickers to get those matching our criteria for dividends
+        DividendStockFilterer dividendStockFilterer = new DividendStockFilterer(
+                new FilesystemDividendRepository()
+        );
+        Set<String> dividendTickers = dividendStockFilterer
+                .filterTickersOnDividends(
+                        tickers,
+                        LocalDate.of(2016, 1, 1),
+                        LocalDate.of(2018, 1, 3),
+                        0.015,
+                        0.9,
+                        2
+                );
 
+        // Set start and end date for analysis
         LocalDate startDate = LocalDate.of(2018, 1, 1);
         LocalDate endDate = LocalDate.of(2023, 5, 1);
 
@@ -79,19 +91,17 @@ public class PortfolioStrategyAnalysisTest {
 
         System.out.println(snapshots);
         System.out.println(snapshots.getInvestmentValueOverTime());
-//        System.out.println(dividendTickers.size());
+        System.out.println(dividendTickers.size());
 
         System.out.println(snapshots.getStartingHoldings());
 
         StockDataSender stockDataSender = new StockDataSender();
 
         PortfolioRunResultToDTOConverter converter = new PortfolioRunResultToDTOConverter();
-        PortfolioAnalysisDTO dto = converter.convert(snapshots);
 
         List<PortfolioAnalysisDTO> dtos = new ArrayList<>();
         dtos.add(converter.convert(snapshots));
         dtos.add(converter.convert(dividendSnapshots));
-
 
         stockDataSender.sendMultipleStrategyAnalysisDataToFlask(dtos);
     }

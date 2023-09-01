@@ -3,7 +3,6 @@ package org.example.model;
 import org.example.persistence.fileSystem.FilesystemDividendRepository;
 import org.example.persistence.fileSystem.GpwFileSystemOhlcRepository;
 
-import org.example.persistence.fileSystem.UsFileSystemOhlcRepository;
 import org.example.sender.StockDataSender;
 import org.junit.Test;
 
@@ -11,14 +10,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class StockNearDividendAggregatorTest {
 
+    /*
+    Please note that those are not real tests, but rather early stage experiments, test functions used as convenience.
+     */
+
     @Test
-    public void add() {
+    public void createStockNearDividendInfoGraph() {
         FilesystemDividendRepository filesystemDividendRepository = new FilesystemDividendRepository();
-        UsFileSystemOhlcRepository filesystemOhlcRepository = new UsFileSystemOhlcRepository();
+        GpwFileSystemOhlcRepository filesystemOhlcRepository = new GpwFileSystemOhlcRepository();
 
 
         List<String> dividendPayers = filesystemDividendRepository.getTickers();
@@ -29,10 +30,8 @@ public class StockNearDividendAggregatorTest {
         for (String dividendPayer : dividendPayers) {
             dividends.addAll(filesystemDividendRepository.getDividends(
                     dividendPayer,
-                    LocalDate.of(1980, 1, 1),
-                    LocalDate.of(2010, 1, 1)
-//                    0.02,
-//                    0.06
+                    LocalDate.of(2010, 1, 1),
+                    LocalDate.of(2022, 1, 1)
                     ));
         }
 
@@ -55,13 +54,5 @@ public class StockNearDividendAggregatorTest {
         StockDataSender stockDataSender = new StockDataSender();
         stockDataSender.sendToFlask(stockNearDividendAggregator.getAvgDailyReturnsDividendAdjusted(), stockNearDividendAggregator.getAvgDividendYield());
 
-    }
-
-    @Test
-    public void getAvgDailyReturns() {
-    }
-
-    @Test
-    public void getAvgDividendYield() {
     }
 }

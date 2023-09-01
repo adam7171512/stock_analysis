@@ -15,13 +15,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BackTesterTest {
+    /*
+    Please note that those are not real tests, but rather early stage experiments, test functions used as convenience.
+     */
 
     @Test
     public void testDividendRunOnCompany() {
         BackTester backTester = new BackTester();
 //        backTester.setTakeProfit(BigDecimal.valueOf(0.03));
 //        backTester.setStopLoss(BigDecimal.valueOf(0.03));
-        StrategyResult strategyResult = backTester.testDividendRunOnCompany("FERRO", 0, 30, 0.02, 0.2, ExecutionMoment.CLOSE, ExecutionMoment.OPEN, BigDecimal.ZERO, BigDecimal.valueOf(999999999), LocalDate.of(2019, 1, 1), LocalDate.of(2020, 1, 1));
+        StrategyResult strategyResult = backTester.testDividendRunOnCompany(
+                "FERRO",
+                0,
+                30,
+                0.02,
+                0.2,
+                ExecutionMoment.CLOSE,
+                ExecutionMoment.OPEN,
+                BigDecimal.ZERO,
+                BigDecimal.valueOf(999999999),
+                LocalDate.of(2019, 1, 1),
+                LocalDate.of(2020, 1, 1)
+        );
         System.out.println(strategyResult.getTrades());
         System.out.println(strategyResult.getSummary());
         System.out.println(strategyResult.getAvgRoi());
@@ -29,15 +44,11 @@ public class BackTesterTest {
     }
 
     @Test
-    public void testSingleDividendRun() {
-    }
-
-    @Test
     public void testDividendRunOnCompanies() {
         TimescaleGpwDividendRepository timescaleGpwDividendRepository = new TimescaleGpwDividendRepository();
         BackTester backTester = new BackTester();
-//        backTester.setDailyTurnoverLowerLimit(BigDecimal.valueOf(100000));
-//        backTester.setDailyTurnoverUpperLimit(BigDecimal.valueOf(2000000));
+        backTester.setDailyTurnoverLowerLimit(BigDecimal.valueOf(100000));
+        backTester.setDailyTurnoverUpperLimit(BigDecimal.valueOf(2000000));
         StrategyResult strategyResult = backTester.testDividendRunOnCompanies(timescaleGpwDividendRepository.getTickers(), 10, 30, 0.02, 0.2, ExecutionMoment.CLOSE, ExecutionMoment.CLOSE, BigDecimal.ZERO, BigDecimal.valueOf(999999999), LocalDate.of(2019, 1, 1), LocalDate.now());
         System.out.println(strategyResult.getTrades());
         System.out.println(strategyResult.getSummary());
