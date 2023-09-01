@@ -23,4 +23,10 @@ Price action near ex-div date for particular filtered set of tickers:
 
 ![image](https://github.com/adam7171512/gpw_div_backtest/assets/117537530/1fc63b3f-2bb7-44ae-9fdf-94390f4fdd45)
 
+Whereas unfiltered data for major dividend payers (The spike couple days prior to ex-div is likely a bug caused by some split/join that I didn't catch yet, however we can see clearly that there are no big anomalies):
+
+![image](https://github.com/adam7171512/stock_analysis/assets/117537530/b634b5ce-60ab-4ec9-b557-000f7ce87896)
+
+yearly adjusted roi heatmap for buy-sell actions relative to ex-div:
+![heatmap_1691543235](https://github.com/adam7171512/stock_analysis/assets/117537530/f919dffd-3f27-4f4b-961a-be1aa3f9b5dd)
 
