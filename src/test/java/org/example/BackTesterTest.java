@@ -1,6 +1,10 @@
 package org.example;
 
+import org.example.model.BackTester;
 import org.example.model.ExecutionMoment;
+import org.example.model.StrategyResult;
+import org.example.model.Trade;
+import org.example.persistence.timeScale.TimescaleGpwDividendRepository;
 import org.junit.Test;
 
 import javax.swing.*;

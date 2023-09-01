@@ -1,7 +1,5 @@
 package org.example.model;
 
-import org.example.StrategyResult;
-
 import java.util.Map;
 
 public class SimplePlotData {

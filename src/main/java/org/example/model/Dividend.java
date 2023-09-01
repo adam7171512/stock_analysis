@@ -64,4 +64,8 @@ public class Dividend {
     public void setYield(BigDecimal yield) {
         this.yield = yield;
     }
+
+    public String getName() {
+        return name;
+    }
 }

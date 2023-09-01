@@ -1,16 +1,11 @@
 package org.example;
 
-import com.google.gson.Gson;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.example.graphs.HeatmapResponse;
-import org.example.graphs.PlotData;
+import org.example.model.BackTester;
 import org.example.model.ExecutionMoment;
+import org.example.persistence.IDividendRepository;
+import org.example.persistence.fileSystem.FilesystemDividendRepository;
+import org.example.persistence.fileSystem.GpwFileSystemOhlcRepository;
+import org.example.persistence.timeScale.TimescaleGpwDividendRepository;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -54,14 +49,14 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        TimescaleGpwDividendRepository timescaleGpwDividendRepository = new TimescaleGpwDividendRepository();
-        FilesystemOhlcRepository filesystemOhlcRepository = new FilesystemOhlcRepository("/home/krzyszfot/Desktop/stocks/");
+        IDividendRepository timescaleGpwDividendRepository = new FilesystemDividendRepository();
+        GpwFileSystemOhlcRepository filesystemOhlcRepository = new GpwFileSystemOhlcRepository("/home/krzyszfot/Desktop/stocks/");
         BackTester backTester = new BackTester();
 
         List<String> companies = timescaleGpwDividendRepository.getTickers();
 
         // remove all wig20 companies
-//        List<String> wig20Companies = filesystemOhlcRepository.getCompanies("/home/krzyszfot/Desktop/stocks/wig20.txt");
+        List<String> wig20Companies = filesystemOhlcRepository.getCompanies("/home/krzyszfot/Desktop/stocks/wig20.txt");
 //        companies.removeAll(wig20Companies);
 
 //        List<String> mwig40Companies = filesystemOhlcRepository.getCompanies("/home/krzyszfot/Desktop/stocks/mwig40.txt");

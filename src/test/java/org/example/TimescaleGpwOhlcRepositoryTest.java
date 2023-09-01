@@ -3,6 +3,8 @@ package org.example;
 
 import org.example.model.Ohlc;
 import org.example.model.Timeframe;
+import org.example.persistence.IOhlcRepository;
+import org.example.persistence.timeScale.TimescaleGpwOhlcRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

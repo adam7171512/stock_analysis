@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Database connection parameters
+DB_HOST="localhost"
+DB_PORT="5432"
+DB_USER="postgres"
+DB_PASS="password"
+DB_NAME="gpw_daily"
+
+# Function to get a list of all tables in the database
+get_tables() {
+    PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public';"
+}
+
+# Loop through each table and export its content to a CSV file
+for table in $(get_tables); do
+    echo "Exporting $table..."
+    # Check if table is a hypertable
+    is_hypertable=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -c "SELECT 1 FROM timescaledb_information.hypertables WHERE table_name = '$table';")
+    if [ "1" = "1" ]; then
+        # Use SELECT for hypertables
+        PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "\COPY (SELECT * FROM \"$table\") TO './$table.csv' CSV HEADER"
+    else
+        # Use regular COPY for normal tables
+        PGPASSWORD=$DB_PASS psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "\COPY \"$table\" TO './$table.csv' CSV HEADER"
+    fi
+done
+
+echo "Export complete!"

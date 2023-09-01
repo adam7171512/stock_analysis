@@ -1,6 +1,7 @@
 package org.example;
 
 
+import org.example.persistence.timeScale.TimescaleGpwDividendRepository;
 import org.junit.Test;
 
 import java.util.List;

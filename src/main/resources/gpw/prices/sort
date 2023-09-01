@@ -1,0 +1,29 @@
+import csv
+import os
+
+# Directory where the CSV files are located
+csv_directory = './'  # current directory; adjust if needed
+
+# Iterate over all CSV files in the specified directory
+for filename in os.listdir(csv_directory):
+    if filename.endswith('.csv'):
+        filepath = os.path.join(csv_directory, filename)
+        
+        # Read the CSV content
+        with open(filepath, 'r') as file:
+            reader = csv.reader(file)
+            rows = list(reader)
+        
+        # Sort the rows based on the date column
+        # Assuming date is the first column; adjust index if needed
+        header, content = rows[0], rows[1:]
+        sorted_content = sorted(content, key=lambda x: x[0])
+        
+        # Write the sorted content back to the CSV
+        with open(filepath, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(header)
+            writer.writerows(sorted_content)
+
+print("CSV files sorted successfully!")
+
