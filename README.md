@@ -15,11 +15,12 @@ The Main Value Object implemented for Portfolio Analysis is PortfolioSnapshot. I
 PortfolioStrategyAnalysis class is the key analysing component for Portfolio Analysis. It takes tickers to analyse, dividend repository, ohlc repository and performs time series analysis creating snapshots at each step, aswell as decides if/when to rebalance the portfolio and when to dispose/buy assets based on ex-div date.
 
 Some interesting results obtained using the tool:
-Price action near ex-div date for particular set of tickers:
 
-![image](https://github.com/adam7171512/gpw_div_backtest/assets/117537530/44c12a47-51d7-4063-a9d6-fda61b2c76cd)
+Some example portfolio strategies comparison (One of strategies keeps static number of holdings, other rotates them) :
+
+![image](https://github.com/adam7171512/gpw_div_backtest/assets/117537530/2fd4b617-5f1f-4792-bdaf-37e28e17e9b3)
+Price action near ex-div date for particular filtered set of tickers:
+
+![image](https://github.com/adam7171512/gpw_div_backtest/assets/117537530/1fc63b3f-2bb7-44ae-9fdf-94390f4fdd45)
 
 
-Some example portfolio strategies comparison :
-
-![image](https://github.com/adam7171512/gpw_div_backtest/assets/117537530/4562f403-25f8-4024-911c-a98f6fe1c57f)
