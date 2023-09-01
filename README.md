@@ -1,7 +1,8 @@
 # Stock analyser
 
 This project was inspired by curiosity to inspect the price action of stocks near the dividend periods and look for some inefficiencies in the market.
-It is a **very** early stage prototype. It's mostly built in Java, however Python was used for data scraping (gpw prices from gpw website, dividend info from stockwatch.pl) and graphing using simple Flask endpoints.
+
+It is a **very** early stage prototype. It's mostly built in Java, however Python was used for data scraping (gpw prices from gpw website, dividend info from stockwatch.pl) and graphing using simple Flask endpoints (Java code sends request to python api to generate graphs).
 
 It's not ready to run "as is" , as there are some ETL tools I've used to create data compatible with my persistence implementations that I have not yet added to the project.
 
@@ -10,7 +11,7 @@ It also allows to perform portfolio analysis with asset rotation, and some simpl
 
 At first, I've fetched the data into TimescaleDb running locally, however later I switched to File System for much faster backtesting, thus two implementations of repository interfaces(IOhlcRepository and IDividendRepository) were written (TimescaleDb and FileSystem).
 
-The Main object representing state of Portfolio in Portfolio Analysis is PortfolioSnapshot. It freezes the Portfolio in time and defines it's composition and value.
+The Main object representing state of Portfolio in Portfolio Analysis is PortfolioSnapshot. It freezes the Portfolio in time and defines it's composition and value. Using ordered collection of those objects, we are able to generate graphs and perform strategy analysis.
 
 PortfolioStrategyAnalysis class is the key analysing component for Portfolio Analysis. It takes tickers to analyse, dividend repository, ohlc repository and performs time series analysis creating snapshots at each step, aswell as decides if/when to rebalance the portfolio and when to dispose/buy assets based on ex-div date.
 
