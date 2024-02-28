@@ -39,6 +39,21 @@ public class Ohlc {
 
     }
 
+    public Ohlc(String test, String date, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, BigDecimal difference, BigDecimal volume) {
+        this.date = OffsetDateTime.parse(date);
+        this.open = open;
+        this.high = high;
+        this.low = low;
+        this.close = close;
+        this.volume = volume;
+        this.ticker = test;
+        this.difference = difference;
+
+        if (this.volume.compareTo(BigDecimal.ZERO) < 0){
+            throw new RuntimeException("Volume cant be lower than 0!" + this.ticker + this.volume + this.date + this.open + this.close);
+        }
+    }
+
     public BigDecimal getOpen() {
         return open;
     }
