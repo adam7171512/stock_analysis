@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class TimescaleDbConnector {
 
-    private static String url = "jdbc:postgresql://localhost:5432/gpw_daily";
+    private static String url = "jdbc:postgresql://46.171.250.14:5432/binance";
     private static String user = "postgres";
-    private static String password = "password";
+    private static String password = "tajniak90";
 
     private TimescaleDbConnector(){
     }
@@ -17,4 +17,6 @@ public class TimescaleDbConnector {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
+
+
 }
